@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "fish-h5": ["./node_modules/fish-h5"],
+      "fish": ["./node_modules/@sdp.nd/fish"],
+      "@/config/env": ["./src/config/env/test"],
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

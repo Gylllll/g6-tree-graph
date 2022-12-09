@@ -1,0 +1,64 @@
+@import '@/component/mixin.less';
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: calc(100vmin / 750 * 100) !important;
+  height: 100%;
+  line-height: 1.15;
+  text-size-adjust: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  @media screen and (orientation: landscape) {
+    font-size: calc(100vmax / 750 * 100) !important;
+  }
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Microsoft Yahei, Hiragino Sans GB, Helvetica, Helvetica Neue, 微软雅黑, Tahoma, Arial, sans-serif';
+  line-height: 1.5;
+  box-sizing: border-box;
+  font-size: 14px;
+  background-color: #f5f5f9; // 小屏背景灰色
+}
+
+body.big-screen {
+  background-color: #fff; // 大屏背景白色
+}
+
+.main {
+  width: 100%;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  list-style: none;
+}
+
+// IOS 刘海屏兼容
+@supports (top: env(safe-area-inset-top)) {
+  body html {
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+// IOS 安全底部
+@supports (bottom: env(safe-area-inset-bottom)) {
+  body {
+    box-sizing: border-box;
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+

@@ -1,0 +1,11 @@
+{
+  "version": "3.2.7",
+  "template_id": "base",
+  "name": "base-template",
+  "path": "/Users/tomhome/nd/x/base-template",
+  "env": "{\"cli_version\":\"2.23.1\",\"npm_version\":\"6.14.14\",\"node_version\":\"v14.17.5\"}",
+  "user": "caolvchong",
+  "email": "caolvchong@gmail.com",
+  "choice": "{\"templateId\":\"base\",\"packageManager\":\"yarn\",\"registry\":\"http://registry.npm.sdp.nd/\",\"features\":[\"lintBeforeCommit\",\"jest\"],\"sass\":false,\"ui\":\"fish\"}",
+  "project_id": "78a4f120-1b72-11ec-9202-83aa72107762_1632293900594"
+}

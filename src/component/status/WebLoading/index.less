@@ -1,0 +1,25 @@
+.x-edu-loading.fish-spin {
+  width: 100%;
+  
+  .fish-spin-indicator {
+    height: 200px;
+    width: 200px;
+  }
+}
+
+// 内容内嵌到 Loading 中时
+.x-edu-nested-loading {
+  min-height: 222px;
+
+  & > div > .center {
+    // 上下居中
+    top: 50%;
+    transform: translateY(-50%);
+    height: 222px;
+  }
+
+  & > div > .x-edu-loading .fish-spin-text {
+    top: unset;
+    padding-top: 0;
+  }
+}
