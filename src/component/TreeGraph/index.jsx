@@ -27,7 +27,7 @@ export default function TreeGraph({
    *   ]
    * }
   */
-  collapse = true, // 初始状态下节点是否全部收起。true: 收起、false: 展开
+  collapse = true, // 是否全展开模式。true: 收起；false: 展开 ==> 是全展开模式
   expandFirst = true, // collapse = true 的情况下生效。除了一级节点展开，其他层级都收起
   nodeSize = 60, // 节点大小
   lineColor = '#A3B1BF', // 边的颜色
@@ -54,11 +54,11 @@ export default function TreeGraph({
   let graph = null
 
   /**
-   * 递归收起节点
-   * @param {Array<object>} siblingNodes 当前点击的节点的其他兄弟节点
+   * 只收起其他兄弟节点（不显示它们的子级，如果有的话）
+   * @param {Array<object>} siblingNodes 当前点击的节点的兄弟节点（包括本身）
    * @param {object} clickItem 当前点击的元素实例
    */
-  const collapseNode = (siblingNodes, clickItem) => {
+  const hiddenSibNode = (siblingNodes, clickItem) => {
     if (!siblingNodes?.length) {
       return
     }
@@ -69,7 +69,7 @@ export default function TreeGraph({
 
       // 收起其他兄弟节点的子节点
       if (hasChildren) {
-        collapseNode(el._cfg.children)
+        hiddenSibNode(el._cfg.children)
         model.collapsed = true
       }
 
@@ -81,11 +81,39 @@ export default function TreeGraph({
   }
 
   /**
-   * 点击节点，收起其他兄弟节点的子节点，并隐藏兄弟节点
+   * 只显示其他兄弟节点（不显示它们的子级，如果有的话）
+   * @param {Array<object>} siblingNodes 当前点击的节点的兄弟节点（包括本身）
+   */
+  const showSibNode = (siblingNodes) => {
+    if (!siblingNodes?.length) {
+      return
+    }
+
+    siblingNodes.forEach((el) => {
+      const model = el.getModel()
+
+      const hasChildren = el._cfg.children && el._cfg.children.length > 0
+
+      // 收起其他兄弟节点的子节点
+      if (hasChildren) {
+        hiddenSibNode(el._cfg.children)
+        model.collapsed = true
+      }
+
+      // 只显示兄弟节点
+      graph.showItem(model.id)
+    })
+  }
+
+  /**
+   *
+   * 点击节点，操作当前节点及其兄弟节点、父节点
+   * 展开该节点时，收起其他兄弟节点的子节点，并隐藏兄弟节点，当前节点（非叶子节点）移动到画布中心
+   * 收起该节点时，显示其他兄弟节点，并将画布移动到以父节点为中心的位置
    * @param {object} item 元素实例
    * @param {boolean} collapsed 收缩状态
    */
-  const collapseSibNode = (item, collapsed) => {
+  const operateNode = (item, collapsed) => {
     const model = item.getModel()
 
     // 叶子节点
@@ -107,19 +135,53 @@ export default function TreeGraph({
       return
     }
 
+    // 如果是全展开模式，只控制自己的展开/收起，不控制其他节点和画布中心
+    if (collapse === false) {
+      model.collapsed = collapsed
+      // TODO: 如果后续对这种模式有其他要求，在这另外写个方法，不要和非全展开模式混一起
+      return
+    }
+
     // 非根节点（有父节点）
-    const hasFartherNode = item._cfg.parent && item._cfg.parent._cfg.id
+    const hasParentNode = item._cfg.parent && item._cfg.parent._cfg.id
 
-    if (hasFartherNode) {
+    if (hasParentNode) {
+      const parentNode = item._cfg.parent
       // 其他兄弟节点
-      const siblingNodes = item._cfg.parent._cfg.children
+      const siblingNodes = parentNode._cfg.children
 
-      if (siblingNodes?.length) {
-        collapseNode(siblingNodes, item)
+      if (collapsed === false) {
+        hiddenSibNode(siblingNodes, item)
+        // 以当前节点为中心
+        moveNodeToCanvasCenter({
+          item,
+          graph,
+          animateEasing
+        })
+      } else {
+        const parentModel = parentNode.getModel()
+        parentModel.collapsed = false
+        showSibNode(siblingNodes)
+        // 以父节点为中心
+        moveNodeToCanvasCenter({
+          item: parentNode,
+          graph,
+          animateEasing
+        })
       }
     } else {
       // 根节点
-      collapseNode(item._cfg.children)
+      if (collapsed === false) {
+        hiddenSibNode(item._cfg.children)
+      } else {
+        showSibNode(item._cfg.children)
+      }
+      // 以当前节点为中心
+      moveNodeToCanvasCenter({
+        item,
+        graph,
+        animateEasing
+      })
     }
 
     model.collapsed = collapsed
@@ -179,10 +241,10 @@ export default function TreeGraph({
       })
 
       // 展开当前节点
-      collapseSibNode(item, false)
+      operateNode(item, false)
     } else {
       // 展开/收起当前节点
-      collapseSibNode(item, collapsed)
+      operateNode(item, collapsed)
     }
 
     // 叶子节点
@@ -200,12 +262,6 @@ export default function TreeGraph({
 
     // 重新以当前配置的属性进行一次布局
     graph.layout()
-
-    moveNodeToCanvasCenter({
-      item,
-      graph,
-      animateEasing
-    })
 
     onNodeClick({
       model, // 元素的数据模型

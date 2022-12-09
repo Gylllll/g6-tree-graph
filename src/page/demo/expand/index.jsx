@@ -22,7 +22,14 @@ const data = {
     }]
   }, {
     id: '1-2',
-    label: '湖南省'
+    label: '湖南省',
+    children: [{
+      id: '1-2-1',
+      label: '长沙市'
+    }, {
+      id: '1-2-2',
+      label: '张家界市'
+    }]
   }, {
     id: '1-3',
     label: '台湾省'
@@ -38,7 +45,7 @@ const data = {
   }]
 }
 
-// 全部展开
+// 全展开模式
 export default function expand() {
   const handleNodeClick = ({
     model, // 元素的数据模型
@@ -54,6 +61,7 @@ export default function expand() {
 
   return (
     <div className="demo">
+      <h4>注意：全展开模式，只控制自己的展开/收起，不控制其他节点和画布中心。没有【整体交互说明】中的第2点特性</h4>
       <h4>1. 不显示结束端箭头：showEndArrow = false</h4>
       <h4>2. messageContent 为空时, 可自定义点击叶子节点后的提示行为</h4>
       <TreeGraph

@@ -10,7 +10,7 @@ export const NavConfig = [
     link: '/collapse'
   },
   {
-    title: '全部展开',
+    title: '全展开模式',
     link: '/expand'
   },
   {
