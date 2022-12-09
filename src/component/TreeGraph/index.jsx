@@ -88,6 +88,11 @@ export default function TreeGraph({
   const collapseSibNode = (item, collapsed) => {
     const model = item.getModel()
 
+    // 叶子节点
+    if (!model.children?.length) {
+      return
+    }
+
     const expand = needExpand({
       node: model,
       expandMaxNum
@@ -180,9 +185,6 @@ export default function TreeGraph({
       collapseSibNode(item, collapsed)
     }
 
-    // 重新以当前配置的属性进行一次布局
-    graph.layout()
-
     // 叶子节点
     if (!model.children?.length) {
       if (messageContent) {
@@ -195,6 +197,9 @@ export default function TreeGraph({
       })
       return
     }
+
+    // 重新以当前配置的属性进行一次布局
+    graph.layout()
 
     moveNodeToCanvasCenter({
       item,
@@ -277,7 +282,6 @@ export default function TreeGraph({
     // 设置各个边样式及其他配置（该方法必须在 render 之前调用，否则不起作用）
     graph.edge((edge) => {
       const newEdge = edgeRender(edge)
-      console.log('edge', edge)
       return {
         ...edge,
         ...newEdge
